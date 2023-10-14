@@ -15,4 +15,12 @@ app.get("/", async (req, res) => {
   });
 });
 
+app.post("/", async (req, res) => {
+  try {
+  } catch (res) {
+    console.error(err);
+    res.status(500).send(err);
+  }
+});
+
 app.listen(4000, () => console.log("Server is running on Port 4000"));
