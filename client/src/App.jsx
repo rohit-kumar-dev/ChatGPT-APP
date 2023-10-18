@@ -25,18 +25,30 @@ function App() {
         },
       }
     );
+    return data;
   };
 
   const onSubmit = () => {
     if (input.trim() === "") return;
     updatePosts(input);
-    fetchBotResponse();
+    updatePosts("loading...", false, true);
+    setInput("");
+    fetchBotResponse().then((res) => {
+      console.log(res);
+      updatePosts(res.bot.trim(), true);
+    });
   };
 
-  const updatePosts = (post) => {
-    setPosts((prevState) => {
-      return [...prevState, { type: "user", post }];
-    });
+  const autoTypingBotResponse = (text) => {};
+
+  const updatePosts = (post, isBot, isLoading) => {
+    if (isBot) {
+      autoTypingBotResponse(post);
+    } else {
+      setPosts((prevState) => {
+        return [...prevState, { type: isLoading ? "loading" : "user", post }];
+      });
+    }
   };
 
   const onKeyUp = (e) => {
@@ -76,6 +88,7 @@ function App() {
       </section>
       <footer>
         <input
+          value={input}
           className="composebar"
           autoFocus
           type="text"
