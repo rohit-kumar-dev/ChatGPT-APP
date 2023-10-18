@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 import send from "./assets/send.svg";
@@ -14,6 +14,11 @@ import bot from "./assets/loader.svg";
 function App() {
   const [input, setInput] = useState("");
   const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    document.querySelector(".layout").scrollTop =
+      document.querySelector(".layout").scrollHeight;
+  }, [posts]);
 
   const fetchBotResponse = async () => {
     const { data } = await axios.post(
@@ -39,7 +44,32 @@ function App() {
     });
   };
 
-  const autoTypingBotResponse = (text) => {};
+  const autoTypingBotResponse = (text) => {
+    let index = 0;
+    let interval = setInterval(() => {
+      if (index < text.length) {
+        setPosts((prevState) => {
+          let lastItem = prevState.pop();
+          if (lastItem.type !== "bot") {
+            prevState.push({
+              type: "bot",
+              post: text.chartAt(index - 1),
+            });
+          } else {
+            prevState.push({
+              type: "bot",
+              post: lastItem.post + text.chartAt(index - 1),
+            });
+          }
+          return [...prevState];
+        });
+
+        index++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 30);
+  };
 
   const updatePosts = (post, isBot, isLoading) => {
     if (isBot) {
